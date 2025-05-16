@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+          crossorigin="anonymous">
+<title>GoblinDrop</title>
+<style>
+  body {
+    margin: 0;
+    background-color: black;
+    color: white;
+    font-family: 'Arial', sans-serif;
+  }
+
+  /* Верхняя панель */
+  .top-bar {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .top-bar span {
+    margin-left: 20px;
+  }
+
+  /* Название сайта */
+  .title {
+    text-align: center;
+    font-family: 'Georgia', serif;
+    font-size: 36px;
+    margin: 20px 0;
+  }
+
+  /* Контейнер для содержимого */
+  .container {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+  }
+
+  /* Блоки */
+  .block {
+    width: 45%;
+    height: 300px;
+    background-color: #222;
+    border: 2px solid #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+</style>
+</head>
+<body link="white" vlink="#fff" alink="#fff">
+<header>
+
+<div class="top-bar">
+        {% if current_user.is_authenticated %}
+    <a style="color: white" href="/profile"><span style="font-size:22px;">{{ current_user.name }}</span></a>
+    <span style="font-size:22px;">{{ current_user.balance }}</span>
+    <span><a class="btn btn-danger" href="/logout">Выйти</a></span>
+{% else %}
+    <p>
+        <a class="btn btn-primary " href="/register">Зарегистрироваться</a>
+        <a class="btn btn-success" href="/login">Войти</a>
+    </p>
+{% endif %}
+</div>
+    <a style="color: white" href="/"><div class="title">GOBLINDROP</div></a>
+</header>
+
+<main role="main">
+    {% block content %}
+    {% endblock %}
+</main>
+</body>
+</html>

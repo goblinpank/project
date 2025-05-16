@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Гоблины</title>
+<style>
+  body {
+    background-color: black;
+    color: white;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+  }
+
+  .characters {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .character {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .model {
+    width: 150px;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  .model img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 10px;
+  }
+
+  .name {
+    font-size: 16px;
+    margin-bottom: 5px;
+  }
+
+  .price {
+    font-size: 24px;
+  }
+</style>
+</head>
+<body>
+
+<div class="characters">
+  {% for goblin in goblins %}
+    <div class="character">
+      <div class="model">
+        <a href="/{{ goblin.link }}" ><img src="{{ url_for('static', filename=goblin.image) }}" alt="{{ goblin.name }}" /></a>
+      </div>
+      <div class="name">{{ goblin.name }} </div>
+      <div class="price">{{ goblin.price }}</div>
+    </div>
+  {% endfor %}
+</div>
+
+</body>
+{% endblock %}

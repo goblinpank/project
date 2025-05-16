@@ -1,0 +1,249 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<title>Продажа товаров</title>
+<style>
+  body {
+    background-color: black;
+    color: white;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+  }
+
+  /* Центрируем заголовок */
+  h1 {
+    text-align: center;
+    font-size: 36px;
+    margin-bottom: 20px;
+  }
+
+  /* Обертка для всех элементов */
+  .content {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  /* Обертка для каждого блока */
+  .block {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 200px;
+    margin: 10px;
+  }
+
+  /* Стиль для изображений */
+  .block img {
+    width: 150px;
+    height: auto;
+    margin-bottom: 10px;
+  }
+
+  /* Стиль для текста */
+  p {
+    margin: 5px 0;
+  }
+
+  /* Стиль для кнопки */
+  button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #444;
+    color: white;
+    border: none;
+    border-radius: 5px;
+  }
+
+  button:hover {
+    background-color: #666;
+  }
+
+  /* Для блока инвентаря, чтобы он был чуть ниже */
+  #inventory-section {
+    margin-top: 40px;
+    width: 100%;
+    display: flex;
+  }
+
+#inventory {
+  display: flex;
+  flex-wrap: wrap; /* переносит элементы на следующую строку при нехватке места */
+  gap: 10px; /* промежуток между элементами */
+  align-items: flex-start; /* выравнивание по верху */
+}
+
+.inventory-list {
+  display: flex;            /* Располагает элементы в строку */
+  flex-wrap: wrap;          /* Переносит элементы на следующую строку, если места не хватает */
+  gap: 10px;               /* Отступы между элементами */
+  align-items: flex-start;  /* Выравнивание по верхней границе */
+}
+
+/* Контейнер для отдельной картинки */
+.item-container {
+  width: 80px;              /* Ширина контейнера */
+  height: 80px;             /* Высота контейнера */
+  display: flex;            /* Для центрирования картинки */
+  justify-content: center;  /* Горизонтальное центрирование */
+  align-items: center;      /* Вертикальное центрирование */
+  box-sizing: border-box;   /* Включает границу и паддинги в размеры */
+  border: 1px solid #ccc;   /* Для визуализации границ, по желанию */
+}
+
+/* Стиль для картинок, чтобы они не растягивались */
+.item-container img {
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+}
+
+  /* Заголовок инвентаря */
+  #inventory h2 {
+    margin-top: 0;
+    text-align: center;
+  }
+
+  /* Список инвентаря */
+  #inventory ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  #inventory li {
+    margin: 10px 0;
+  }
+</style>
+</head>
+<body>
+
+<div style="text-align:center; margin-top:30px;">
+  <label id="file-label" for="file-input">
+    <span id="upload-text">Выберите фото</span>
+    <img id="preview" src="" alt="" />
+    <input type="file" accept="image/*" id="file-input" onchange="handleFileChange()" />
+  </label>
+</div>
+
+
+
+  <!-- Второй блок -->
+  <div style="text-align:center" >
+    <p>{{user.name}}</p>
+
+  </div>
+
+  <!-- Четвертый блок -->
+<!-- Кнопка для продажи -->
+
+<button id="sellButton">Продать все</button>
+
+
+<h2>Ваш инвентарь</h2>
+<!-- Блок инвентаря, расположенный чуть ниже -->
+<div id="inventory-section">
+  <div id="inventory">
+    <div class="inventory-list">
+      {% for j in weapon %}
+        {% for i in user.inventory.split(", ") %}
+          {% if i|int == j.id %}
+            <div class="item-container">
+              <img src="{{ url_for('static', filename=j.picture) }}" alt="инвентарь пуст" />
+            </div>
+          {% endif %}
+        {% endfor %}
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Поле для выбора фото -->
+
+
+<script>
+  function handleFileChange() {
+    const input = document.getElementById('file-input');
+    const preview = document.getElementById('preview');
+    const uploadText = document.getElementById('upload-text');
+
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = function() {
+        preview.src = reader.result;
+        preview.style.display = 'block';
+        // Убираем текст и делаем изображение круглым
+        uploadText.style.display = 'none';
+        preview.style.borderRadius = '50%';
+        // делаем изображение занимать весь label
+        preview.style.width = '150px';
+        preview.style.height = '150px';
+      };
+      reader.readAsDataURL(input.files[0]);
+    } else {
+      // Если файл не выбран, возвращаем всё в исходное состояние
+      preview.src = '';
+      preview.style.display = 'none';
+      uploadText.style.display = 'block';
+    }
+  }
+</script>
+
+<script>
+  const weaponData = {{ weapon_list | tojson }};
+  const userInventory = {{ user_inventory | tojson }};
+</script>
+
+<script>
+
+document.getElementById('sellButton').addEventListener('click', function() {
+  console.log('Кнопка нажата');
+
+  let totalSale = 0;
+
+  // Перебираем все оружия и инвентарь пользователя
+  for (const itemId of userInventory) {
+    const weapon = weaponData.find(w => w.id === itemId);
+    if (weapon) {
+      totalSale += weapon.price;
+    }
+  }
+
+  fetch('/sell_all', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ totalSale: totalSale })
+  })
+  .then(response => {
+      if (!response.ok) {
+          throw new Error('Network response was not ok');
+      }
+      return response.json();
+  })
+  .then(data => {
+      if (data.success) {
+          alert('Продажа завершена успешно!');
+          // Обновите интерфейс по необходимости
+      } else {
+          alert('Ошибка при продаже: ' + data.message);
+      }
+  })
+  .catch((error) => {
+      console.error('Ошибка:', error);
+      alert('Произошла ошибка при продаже.');
+  });
+});
+
+</script>
+
+</body>
+{% endblock %}
